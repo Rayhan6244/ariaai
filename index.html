@@ -1,0 +1,72 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Secure Chat with Aria</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f8ff;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #chat {
+      width: 100%;
+      max-width: 600px;
+      height: 400px;
+      overflow-y: auto;
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    input, button {
+      font-size: 16px;
+      padding: 10px;
+      margin: 5px;
+    }
+    button {
+      background-color: #1a73e8;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2>Secure Chat with Aria 🔐</h2>
+  <div id="chat"></div>
+  <input type="text" id="userInput" placeholder="Say something..." />
+  <button onclick="sendMessage()">Send</button>
+
+  <script>
+    async function sendMessage() {
+      const input = document.getElementById("userInput");
+      const msg = input.value.trim();
+      if (!msg) return;
+
+      const chat = document.getElementById("chat");
+      chat.innerHTML += `<div><b>You:</b> ${msg}</div>`;
+      input.value = "";
+
+      try {
+        const res = await fetch("https://openai-gpt-proxy-server.vercel.app/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: msg })
+        });
+        const data = await res.json();
+        chat.innerHTML += `<div><b>Aria:</b> ${data.reply}</div>`;
+      } catch (err) {
+        chat.innerHTML += `<div style="color:red;">Error: ${err.message}</div>`;
+      }
+
+      chat.scrollTop = chat.scrollHeight;
+    }
+  </script>
+</body>
+</html>
